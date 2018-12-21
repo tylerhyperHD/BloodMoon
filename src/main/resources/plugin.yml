@@ -2,6 +2,7 @@ name: "${project.name}"
 version: "${project.version}-Samistine"
 main: "uk.co.jacekk.bukkit.bloodmoon.BloodMoon"
 load: startup
+api-version: 1.13
 
 permissions:
   bloodmoon.admin.*:

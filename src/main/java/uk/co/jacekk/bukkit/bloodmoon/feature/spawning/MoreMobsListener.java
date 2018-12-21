@@ -13,20 +13,20 @@ import uk.co.jacekk.bukkit.bloodmoon.event.BloodMoonEndEvent;
 
 public final class MoreMobsListener extends BaseListener<BloodMoon> {
 
-    public MoreMobsListener(BloodMoon plugin) {
-        super(plugin);
-    }
+	public MoreMobsListener(BloodMoon plugin) {
+		super(plugin);
+	}
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onStop(BloodMoonEndEvent event) {
-        World world = event.getWorld();
-        PluginConfig worldConfig = plugin.getConfig(world);
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onStop(BloodMoonEndEvent event) {
+		World world = event.getWorld();
+		PluginConfig worldConfig = plugin.getConfig(world);
 
-        for (LivingEntity entity : world.getLivingEntities()) {
-            if (worldConfig.getStringList(Config.FEATURE_SPAWN_CONTROL_SPAWN).contains(entity.getType().name())) {
-                entity.remove();
-            }
-        }
-    }
+		for (LivingEntity entity : world.getLivingEntities()) {
+			if (worldConfig.getStringList(Config.FEATURE_SPAWN_CONTROL_SPAWN).contains(entity.getType().name())) {
+				entity.remove();
+			}
+		}
+	}
 
 }

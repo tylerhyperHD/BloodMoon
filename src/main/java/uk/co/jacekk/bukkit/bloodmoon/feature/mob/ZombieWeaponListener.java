@@ -23,76 +23,82 @@ import uk.co.jacekk.bukkit.bloodmoon.Feature;
 import uk.co.jacekk.bukkit.bloodmoon.event.BloodMoonEndEvent;
 import uk.co.jacekk.bukkit.bloodmoon.event.BloodMoonStartEvent;
 
+@SuppressWarnings("deprecation")
 public class ZombieWeaponListener implements Listener {
 
-    private final BloodMoon plugin;
-    private final Random random = new Random();
+	private final BloodMoon plugin;
+	private final Random random = new Random();
 
-    public ZombieWeaponListener(BloodMoon plugin) {
-        this.plugin = plugin;
-    }
+	public ZombieWeaponListener(BloodMoon plugin) {
+		this.plugin = plugin;
+	}
 
-    private void giveWeapon(LivingEntity entity, PluginConfig worldConfig) {
-        String name = ListUtils.getRandom(worldConfig.getStringList(Config.FEATURE_ZOMBIE_WEAPON_WEAPONS)).toUpperCase();
-        Material type = Material.getMaterial(name);
+	private void giveWeapon(LivingEntity entity, PluginConfig worldConfig) {
+		String name = ListUtils.getRandom(worldConfig.getStringList(Config.FEATURE_ZOMBIE_WEAPON_WEAPONS))
+				.toUpperCase();
+		Material type = Material.getMaterial(name);
 
-        if (type == null || type.isBlock()) {
-            plugin.getLogger().log(Level.WARNING, "{0} is not a valid item name", name);
-            return;
-        }
+		if (type == null || type.isBlock()) {
+			plugin.getLogger().log(Level.WARNING, "{0} is not a valid item name", name);
+			return;
+		}
 
-        EntityEquipment equipment = entity.getEquipment();
+		EntityEquipment equipment = entity.getEquipment();
 
-        equipment.setItemInHand(new ItemStack(type));
-        equipment.setItemInHandDropChance(worldConfig.getInt(Config.FEATURE_ZOMBIE_WEAPON_DROP_CHANCE) / 100.0f);
-    }
+		equipment.setItemInHand(new ItemStack(type));
+		equipment.setItemInHandDropChance(worldConfig.getInt(Config.FEATURE_ZOMBIE_WEAPON_DROP_CHANCE) / 100.0f);
+	}
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onStart(BloodMoonStartEvent event) {
-        World world = event.getWorld();
-        PluginConfig worldConfig = plugin.getConfig(world);
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onStart(BloodMoonStartEvent event) {
+		World world = event.getWorld();
+		PluginConfig worldConfig = plugin.getConfig(world);
 
-        if (plugin.isFeatureEnabled(world, Feature.ZOMBIE_WEAPON)) {
-            for (LivingEntity entity : event.getWorld().getLivingEntities()) {
-                if (!worldConfig.getBoolean(Config.FEATURE_ZOMBIE_WEAPON_IGNORE_SPAWNERS) || plugin.getSpawnReason(entity) != SpawnReason.SPAWNER) {
-                    if (entity.getType() == EntityType.ZOMBIE && this.random.nextInt(100) < worldConfig.getInt(Config.FEATURE_ZOMBIE_WEAPON_CHANCE)) {
-                        this.giveWeapon(entity, worldConfig);
-                    }
-                }
-            }
-        }
-    }
+		if (plugin.isFeatureEnabled(world, Feature.ZOMBIE_WEAPON)) {
+			for (LivingEntity entity : event.getWorld().getLivingEntities()) {
+				if (!worldConfig.getBoolean(Config.FEATURE_ZOMBIE_WEAPON_IGNORE_SPAWNERS)
+						|| plugin.getSpawnReason(entity) != SpawnReason.SPAWNER) {
+					if (entity.getType() == EntityType.ZOMBIE
+							&& this.random.nextInt(100) < worldConfig.getInt(Config.FEATURE_ZOMBIE_WEAPON_CHANCE)) {
+						this.giveWeapon(entity, worldConfig);
+					}
+				}
+			}
+		}
+	}
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onCreatureSpawn(CreatureSpawnEvent event) {
-        World world = event.getLocation().getWorld();
-        PluginConfig worldConfig = plugin.getConfig(world);
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onCreatureSpawn(CreatureSpawnEvent event) {
+		World world = event.getLocation().getWorld();
+		PluginConfig worldConfig = plugin.getConfig(world);
 
-        if (plugin.isActive(world) && plugin.isFeatureEnabled(world, Feature.ZOMBIE_WEAPON)) {
-            LivingEntity entity = event.getEntity();
+		if (plugin.isActive(world) && plugin.isFeatureEnabled(world, Feature.ZOMBIE_WEAPON)) {
+			LivingEntity entity = event.getEntity();
 
-            if (!worldConfig.getBoolean(Config.FEATURE_ZOMBIE_WEAPON_IGNORE_SPAWNERS) || event.getSpawnReason() != SpawnReason.SPAWNER) {
-                if (entity.getType() == EntityType.ZOMBIE && this.random.nextInt(100) < worldConfig.getInt(Config.FEATURE_ZOMBIE_WEAPON_CHANCE)) {
-                    this.giveWeapon(entity, worldConfig);
-                }
-            }
-        }
-    }
+			if (!worldConfig.getBoolean(Config.FEATURE_ZOMBIE_WEAPON_IGNORE_SPAWNERS)
+					|| event.getSpawnReason() != SpawnReason.SPAWNER) {
+				if (entity.getType() == EntityType.ZOMBIE
+						&& this.random.nextInt(100) < worldConfig.getInt(Config.FEATURE_ZOMBIE_WEAPON_CHANCE)) {
+					this.giveWeapon(entity, worldConfig);
+				}
+			}
+		}
+	}
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onStop(BloodMoonEndEvent event) {
-        World world = event.getWorld();
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onStop(BloodMoonEndEvent event) {
+		World world = event.getWorld();
 
-        if (plugin.isFeatureEnabled(world, Feature.ZOMBIE_WEAPON)) {
-            for (LivingEntity entity : world.getLivingEntities()) {
-                if (entity.getType() == EntityType.ZOMBIE) {
-                    EntityEquipment equipment = entity.getEquipment();
+		if (plugin.isFeatureEnabled(world, Feature.ZOMBIE_WEAPON)) {
+			for (LivingEntity entity : world.getLivingEntities()) {
+				if (entity.getType() == EntityType.ZOMBIE) {
+					EntityEquipment equipment = entity.getEquipment();
 
-                    equipment.setItemInHand(null);
-                    equipment.setItemInHandDropChance(0.0f);
-                }
-            }
-        }
-    }
+					equipment.setItemInHand(null);
+					equipment.setItemInHandDropChance(0.0f);
+				}
+			}
+		}
+	}
 
 }

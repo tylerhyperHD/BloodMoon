@@ -1,27 +1,31 @@
 package uk.co.jacekk.bukkit.bloodmoon.nms;
 
 import java.util.Set;
-import net.minecraft.server.v1_9_R2.EnchantmentManager;
-import net.minecraft.server.v1_9_R2.Enchantments;
-import net.minecraft.server.v1_9_R2.EntityHuman;
-import net.minecraft.server.v1_9_R2.EntityTippedArrow;
-import net.minecraft.server.v1_9_R2.IRangedEntity;
-import net.minecraft.server.v1_9_R2.MathHelper;
-import net.minecraft.server.v1_9_R2.PathfinderGoalFleeSun;
-import net.minecraft.server.v1_9_R2.PathfinderGoalFloat;
-import net.minecraft.server.v1_9_R2.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_9_R2.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_9_R2.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_9_R2.PathfinderGoalRandomLookaround;
-import net.minecraft.server.v1_9_R2.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_9_R2.PathfinderGoalRestrictSun;
-import net.minecraft.server.v1_9_R2.SoundEffects;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftSkeleton;
+import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftSkeleton;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.plugin.Plugin;
+
+import net.minecraft.server.v1_13_R2.EnchantmentManager;
+import net.minecraft.server.v1_13_R2.Enchantments;
+import net.minecraft.server.v1_13_R2.EntityHuman;
+import net.minecraft.server.v1_13_R2.EntityTippedArrow;
+import net.minecraft.server.v1_13_R2.EnumDirection.EnumAxis;
+import net.minecraft.server.v1_13_R2.IRangedEntity;
+import net.minecraft.server.v1_13_R2.MathHelper;
+import net.minecraft.server.v1_13_R2.PathfinderGoalFleeSun;
+import net.minecraft.server.v1_13_R2.PathfinderGoalFloat;
+import net.minecraft.server.v1_13_R2.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_13_R2.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_13_R2.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_13_R2.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_13_R2.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_13_R2.PathfinderGoalRestrictSun;
+import net.minecraft.server.v1_13_R2.SoundEffects;
 import uk.co.jacekk.bukkit.baseplugin.config.PluginConfig;
 import uk.co.jacekk.bukkit.baseplugin.util.ReflectionUtils;
 import uk.co.jacekk.bukkit.bloodmoon.BloodMoon;
@@ -29,48 +33,48 @@ import uk.co.jacekk.bukkit.bloodmoon.Config;
 import uk.co.jacekk.bukkit.bloodmoon.entity.BloodMoonEntitySkeleton;
 import uk.co.jacekk.bukkit.bloodmoon.entity.BloodMoonEntityType;
 
-//public class EntitySkeleton {
-public class EntitySkeleton extends net.minecraft.server.v1_9_R2.EntitySkeleton implements IRangedEntity {
+public class EntitySkeleton extends net.minecraft.server.v1_13_R2.EntitySkeleton implements IRangedEntity {
 
-    private BloodMoon plugin;
-    private BloodMoonEntitySkeleton bloodMoonEntity;
+	private BloodMoon plugin;
+	private BloodMoonEntitySkeleton bloodMoonEntity;
 
-    public EntitySkeleton(net.minecraft.server.v1_9_R2.World world) {
-        super(world);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public EntitySkeleton(net.minecraft.server.v1_13_R2.World world) {
+		super(world);
 
-        Plugin gPlugin = Bukkit.getPluginManager().getPlugin("BloodMoon");
+		Plugin gPlugin = Bukkit.getPluginManager().getPlugin("BloodMoon");
 
-        if (gPlugin == null || !(gPlugin instanceof BloodMoon)) {
-            this.world.removeEntity(this);
-            return;
-        }
+		if (gPlugin == null || !(gPlugin instanceof BloodMoon)) {
+			this.world.removeEntity(this);
+			return;
+		}
 
-        this.plugin = (BloodMoon) gPlugin;
+		this.plugin = (BloodMoon) gPlugin;
 
-        this.bukkitEntity = new CraftSkeleton((CraftServer) this.plugin.getServer(), this);
-        this.bloodMoonEntity = new BloodMoonEntitySkeleton(this.plugin, this, BloodMoonEntityType.SKELETON);
+		this.bukkitEntity = new CraftSkeleton((CraftServer) this.plugin.getServer(), this);
+		this.bloodMoonEntity = new BloodMoonEntitySkeleton(this.plugin, this, BloodMoonEntityType.SKELETON);
 
-        try {
-            ReflectionUtils.getFieldValue(this.goalSelector.getClass(), "b", Set.class, this.goalSelector).clear();
-            ReflectionUtils.getFieldValue(this.goalSelector.getClass(), "c", Set.class, this.goalSelector).clear();
-            ReflectionUtils.getFieldValue(this.targetSelector.getClass(), "b", Set.class, this.targetSelector).clear();
-            ReflectionUtils.getFieldValue(this.targetSelector.getClass(), "c", Set.class, this.targetSelector).clear();
+		try {
+			ReflectionUtils.getFieldValue(this.goalSelector.getClass(), "b", Set.class, this.goalSelector).clear();
+			ReflectionUtils.getFieldValue(this.goalSelector.getClass(), "c", Set.class, this.goalSelector).clear();
+			ReflectionUtils.getFieldValue(this.targetSelector.getClass(), "b", Set.class, this.targetSelector).clear();
+			ReflectionUtils.getFieldValue(this.targetSelector.getClass(), "c", Set.class, this.targetSelector).clear();
 
-            this.goalSelector.a(1, new PathfinderGoalFloat(this));
-            this.goalSelector.a(2, new PathfinderGoalRestrictSun(this));
-            this.goalSelector.a(3, new PathfinderGoalFleeSun(this, 1.0d));
-            // NOTE: See bJ() below
-            this.goalSelector.a(5, new PathfinderGoalRandomStroll(this, 1.0d));
-            this.goalSelector.a(6, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-            this.goalSelector.a(6, new PathfinderGoalRandomLookaround(this));
+			this.goalSelector.a(1, new PathfinderGoalFloat(this));
+			this.goalSelector.a(2, new PathfinderGoalRestrictSun(this));
+			this.goalSelector.a(3, new PathfinderGoalFleeSun(this, 1.0d));
+			// NOTE: See bJ() below
+			this.goalSelector.a(5, new PathfinderGoalRandomStroll(this, 1.0d));
+			this.goalSelector.a(6, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+			this.goalSelector.a(6, new PathfinderGoalRandomLookaround(this));
 
-            this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-            this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, false, true));
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.world.removeEntity(this);
-        }
-    }
+			this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
+			this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, false, true));
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.world.removeEntity(this);
+		}
+	}
 
 //	@Override
 //	public GroupDataEntity prepare(GroupDataEntity entityData){
@@ -98,71 +102,78 @@ public class EntitySkeleton extends net.minecraft.server.v1_9_R2.EntitySkeleton 
 //
 //		return entityData;
 //	}
-    @Override
-    public boolean cp() {
-        try {
-            this.bloodMoonEntity.onTick();
-            super.co();
-        } catch (Exception e) {
-            plugin.getLogger().warning("Exception caught while ticking entity");
-            e.printStackTrace();
-        }
-        return true;
-    }
+	@Override
+	public boolean cp() {
+		try {
+			this.bloodMoonEntity.onTick();
+			super.co();
+		} catch (Exception e) {
+			plugin.getLogger().warning("Exception caught while ticking entity");
+			e.printStackTrace();
+		}
+		return true;
+	}
 
-    @Override
-    public void a(net.minecraft.server.v1_9_R2.EntityLiving entityLiving, float f) {
-        EntityTippedArrow entitytippedarrow = new EntityTippedArrow(this.world, this);
-        double d0 = entityLiving.locX - this.locX;
-        double d1 = entityLiving.getBoundingBox().b + (double) (entityLiving.length / 3.0F) - entitytippedarrow.locY;
-        double d2 = entityLiving.locZ - this.locZ;
-        double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
+	@Override
+	public void a(net.minecraft.server.v1_13_R2.EntityLiving entityLiving, float f) {
+		EntityTippedArrow entitytippedarrow = new EntityTippedArrow(this.world, this);
+		double d0 = entityLiving.locX - this.locX;
+		double d1 = entityLiving.getBoundingBox().b(EnumAxis.Y) + (double) (entityLiving.length / 3.0F)
+				- entitytippedarrow.locY;
+		double d2 = entityLiving.locZ - this.locZ;
+		double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
 
-        entitytippedarrow.shoot(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float) (14 - this.world.getDifficulty().a() * 4));
-        int i = EnchantmentManager.a(Enchantments.ARROW_DAMAGE, this);
-        int j = EnchantmentManager.a(Enchantments.ARROW_KNOCKBACK, this);
+		entitytippedarrow.shoot(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F,
+				(float) (14 - this.world.getDifficulty().a() * 4));
+		int i = EnchantmentManager.a(Enchantments.ARROW_DAMAGE, this);
+		int j = EnchantmentManager.a(Enchantments.ARROW_KNOCKBACK, this);
 
-        entitytippedarrow.c((double) (f * 2.0F) + this.random.nextGaussian() * 0.25D + (double) ((float) this.world.getDifficulty().a() * 0.11F));
-        if (i > 0) {//set enchantment level
-            entitytippedarrow.c(entitytippedarrow.k() + i * 0.5D + 0.5D);
-        }
+		entitytippedarrow.setDamage((double) (f * 2.0F) + this.random.nextGaussian() * 0.25D
+				+ (double) ((float) this.world.getDifficulty().a() * 0.11F));
+		if (i > 0) {
+			// set enchantment level
+			entitytippedarrow.setDamage(entitytippedarrow.getDamage() + i * 0.5D + 0.5D);
+		}
 
-        if (j > 0) {//set knockback
-            entitytippedarrow.setKnockbackStrength(j);
-        }
+		if (j > 0) {// set knockback
+			entitytippedarrow.setKnockbackStrength(j);
+		}
 
-        World bukkitWorld = this.world.worldData.world.getWorld();
-        PluginConfig worldConfig = plugin.getConfig(bukkitWorld);
+		World bukkitWorld = this.world.worldData.world.getWorld();
+		PluginConfig worldConfig = plugin.getConfig(bukkitWorld);
 
-        if (plugin.isActive(bukkitWorld) && worldConfig.getBoolean(Config.FEATURE_FIRE_ARROWS_ENABLED) && (this.random.nextInt(100) < worldConfig.getInt(Config.FEATURE_FIRE_ARROWS_CHANCE))
-                || (EnchantmentManager.a(Enchantments.ARROW_FIRE, this) > 0 || this.getSkeletonType() == 1)) {
-            // CraftBukkit start - call EntityCombustEvent
-            EntityCombustEvent event = new EntityCombustEvent(entitytippedarrow.getBukkitEntity(), 100);
-            this.world.getServer().getPluginManager().callEvent(event);
+		if (plugin.isActive(bukkitWorld) && worldConfig.getBoolean(Config.FEATURE_FIRE_ARROWS_ENABLED)
+				&& (this.random.nextInt(100) < worldConfig.getInt(Config.FEATURE_FIRE_ARROWS_CHANCE))
+				|| (EnchantmentManager.a(Enchantments.ARROW_FIRE, this) > 0
+						|| bukkitEntity.getType() == EntityType.SKELETON)) {
+			// CraftBukkit start - call EntityCombustEvent
+			EntityCombustEvent event = new EntityCombustEvent(entitytippedarrow.getBukkitEntity(), 100);
+			this.world.getServer().getPluginManager().callEvent(event);
 
-            if (!event.isCancelled()) {
-                entitytippedarrow.setOnFire(event.getDuration());
-            }
-            // CraftBukkit end
-        }
+			if (!event.isCancelled()) {
+				entitytippedarrow.setOnFire(event.getDuration());
+			}
+			// CraftBukkit end
+		}
 
 //        if (plugin.isActive(worldName) && worldConfig.getBoolean(Config.FEATURE_FIRE_ARROWS_ENABLED) && (this.random.nextInt(100) < worldConfig.getInt(Config.FEATURE_FIRE_ARROWS_CHANCE))) {
 //            //if (EnchantmentManager.getEnchantmentLevel(Enchantment.ARROW_FIRE.id, this.bz()) > 0 || getSkeletonType() == 1) {
 //            //entityarrow.setOnFire(1024);
 //            //}
 //        }
-        // CraftBukkit start
-        org.bukkit.event.entity.EntityShootBowEvent event = org.bukkit.craftbukkit.v1_9_R2.event.CraftEventFactory.callEntityShootBowEvent(this, this.getItemInMainHand(), entitytippedarrow, 0.8f);
-        if (event.isCancelled()) {
-            event.getProjectile().remove();
-            return;
-        }
+		// CraftBukkit start
+		org.bukkit.event.entity.EntityShootBowEvent event = org.bukkit.craftbukkit.v1_13_R2.event.CraftEventFactory
+				.callEntityShootBowEvent(this, this.getItemInMainHand(), entitytippedarrow, 0.8f);
+		if (event.isCancelled()) {
+			event.getProjectile().remove();
+			return;
+		}
 
-        if (event.getProjectile() == entitytippedarrow.getBukkitEntity()) {
-            world.addEntity(entitytippedarrow);
-        }
-        // CraftBukkit end
+		if (event.getProjectile() == entitytippedarrow.getBukkitEntity()) {
+			world.addEntity(entitytippedarrow);
+		}
+		// CraftBukkit end
 
-        this.a(SoundEffects.fn, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
-    }
+		this.a(SoundEffects.ENTITY_SKELETON_HURT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
+	}
 }

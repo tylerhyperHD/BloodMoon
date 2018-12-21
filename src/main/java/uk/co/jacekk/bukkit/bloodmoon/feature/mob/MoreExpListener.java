@@ -16,23 +16,25 @@ import uk.co.jacekk.bukkit.bloodmoon.Feature;
 
 public class MoreExpListener implements Listener {
 
-    private final BloodMoon plugin;
+	private final BloodMoon plugin;
 
-    public MoreExpListener(BloodMoon plugin) {
-        this.plugin = plugin;
-    }
+	public MoreExpListener(BloodMoon plugin) {
+		this.plugin = plugin;
+	}
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityDeath(EntityDeathEvent event) {
-        LivingEntity entity = event.getEntity();
-        World world = entity.getWorld();
-        PluginConfig worldConfig = plugin.getConfig(world);
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onEntityDeath(EntityDeathEvent event) {
+		LivingEntity entity = event.getEntity();
+		World world = entity.getWorld();
+		PluginConfig worldConfig = plugin.getConfig(world);
 
-        if (entity instanceof Creature && plugin.isActive(world) && plugin.isFeatureEnabled(world, Feature.MORE_EXP)) {
-            if (!worldConfig.getBoolean(Config.FEATURE_MORE_EXP_IGNORE_SPAWNERS) || plugin.getSpawnReason(entity) != SpawnReason.SPAWNER) {
-                event.setDroppedExp(event.getDroppedExp() * Math.max(worldConfig.getInt(Config.FEATURE_MORE_EXP_MULTIPLIER), 0));
-            }
-        }
-    }
+		if (entity instanceof Creature && plugin.isActive(world) && plugin.isFeatureEnabled(world, Feature.MORE_EXP)) {
+			if (!worldConfig.getBoolean(Config.FEATURE_MORE_EXP_IGNORE_SPAWNERS)
+					|| plugin.getSpawnReason(entity) != SpawnReason.SPAWNER) {
+				event.setDroppedExp(
+						event.getDroppedExp() * Math.max(worldConfig.getInt(Config.FEATURE_MORE_EXP_MULTIPLIER), 0));
+			}
+		}
+	}
 
 }

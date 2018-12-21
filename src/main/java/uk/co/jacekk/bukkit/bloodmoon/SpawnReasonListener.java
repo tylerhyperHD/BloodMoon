@@ -8,15 +8,15 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class SpawnReasonListener implements Listener {
 
-    private final BloodMoon plugin;
+	private final BloodMoon plugin;
 
-    public SpawnReasonListener(BloodMoon plugin) {
-        this.plugin = plugin;
-    }
+	public SpawnReasonListener(BloodMoon plugin) {
+		this.plugin = plugin;
+	}
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onCreatureSpawn(CreatureSpawnEvent event) {
-        event.getEntity().setMetadata("spawn-reason", new FixedMetadataValue(plugin, event.getSpawnReason()));
-    }
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onCreatureSpawn(CreatureSpawnEvent event) {
+		event.getEntity().setMetadata("spawn-reason", new FixedMetadataValue(plugin, event.getSpawnReason()));
+	}
 
 }
